@@ -1,0 +1,41 @@
+{
+  "name": "deepdesk",
+  "productName": "Deepdesk",
+  "version": "1.0.0",
+  "description": "Deepdesk — a local-first focus dashboard. Pomodoro timer, session intents, ambient noise, and a deep-work dashboard. Pay once, own it forever.",
+  "author": "Ben (bensblueprints)",
+  "license": "MIT",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/smoke.js",
+    "dist": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.bensblueprints.deepdesk",
+    "productName": "Deepdesk",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "package.json",
+      "LICENSE"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "deleteAppDataOnUninstall": false,
+      "shortcutName": "Deepdesk"
+    }
+  }
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline';" />
+  <title>Deepdesk Mini</title>
+  <style>
+    :root {
+      --panel: rgba(17, 21, 31, 0.94);
+      --border: #2a3348;
+      --text: #e6ebf5;
+      --muted: #8b95ab;
+      --focus-c: #6c8cff;
+      --break-c: #3ecf8e;
+      --long-c: #f5b04c;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: transparent; overflow: hidden; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .mini {
+      -webkit-app-region: drag; /* whole card is draggable */
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin: 4px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      backdrop-filter: blur(6px);
+    }
+    .row { display: flex; align-items: center; gap: 12px; }
+    .ring-wrap { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
+    svg { transform: rotate(-90deg); display: block; }
+    .rbg { fill: none; stroke: #232c3f; stroke-width: 4; }
+    .rfg {
+      fill: none; stroke: var(--focus-c); stroke-width: 4; stroke-linecap: round;
+      stroke-dasharray: 113.1; /* 2*pi*18 */
+      stroke-dashoffset: 113.1;
+      transition: stroke-dashoffset 0.3s linear, stroke 0.4s;
+    }
+    .ring-icon {
+      position: absolute; inset: 0; display: grid; place-items: center;
+      font-size: 13px;
+    }
+    .info { flex: 1; min-width: 0; }
+    .time { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+    .phase { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;
+             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .controls {
+      display: none;
+      gap: 8px;
+      -webkit-app-region: no-drag;
+    }
+    body.expanded .controls { display: flex; }
+    .controls button {
+      flex: 1;
+      background: #1c2333; color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 7px 0; font-size: 11px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    .controls button:hover { filter: brightness(1.25); }
+  </style>
+</head>
+<body>
+  <div class="mini">
+    <div class="row">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 40 40" width="44" height="44">
+          <circle class="rbg" cx="20" cy="20" r="18"></circle>
+          <circle class="rfg" id="rfg" cx="20" cy="20" r="18"></circle>
+        </svg>
+        <div class="ring-icon" id="icon">◈</div>
+      </div>
+      <div class="info">
+        <div class="time" id="time">25:00</div>
+        <div class="phase" id="phase">Ready</div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnToggle">Pause</button>
+      <button id="btnSkip">Skip</button>
+      <button id="btnOpen">Open</button>
+    </div>
+  </div>
+  <script src="mini.js"></script>
+</body>
+</html>

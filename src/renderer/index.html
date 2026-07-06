@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;" />
+  <title>Deepdesk</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-name">Deepdesk</div>
+      </div>
+      <nav>
+        <button class="nav-btn active" data-view="focus">⏱ <span>Focus</span></button>
+        <button class="nav-btn" data-view="dashboard">📊 <span>Dashboard</span></button>
+        <button class="nav-btn" data-view="settings">⚙ <span>Settings</span></button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="streak-pill" id="sidebarStreak">🔥 0 day streak</div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <!-- ============ FOCUS VIEW ============ -->
+      <section class="view active" id="view-focus">
+        <div class="focus-grid">
+          <div class="panel timer-panel">
+            <input id="intentInput" class="intent-input" type="text"
+                   placeholder="What are you working on?" maxlength="120" />
+            <div class="ring-wrap">
+              <svg class="ring" viewBox="0 0 260 260" width="260" height="260">
+                <circle class="ring-bg" cx="130" cy="130" r="118" />
+                <circle class="ring-fg" id="ringFg" cx="130" cy="130" r="118" />
+              </svg>
+              <div class="ring-center">
+                <div class="phase-label" id="phaseLabel">Ready</div>
+                <div class="time-display" id="timeDisplay">25:00</div>
+                <div class="cycle-dots" id="cycleDots"></div>
+              </div>
+            </div>
+            <div class="controls">
+              <button id="btnStart" class="btn btn-primary">Start focus</button>
+              <button id="btnPause" class="btn hidden">Pause</button>
+              <button id="btnSkip" class="btn hidden">Skip</button>
+              <button id="btnReset" class="btn btn-ghost hidden">Reset</button>
+            </div>
+          </div>
+
+          <div class="focus-side">
+            <div class="panel tasks-panel">
+              <h2>Tasks</h2>
+              <form id="taskForm" class="task-form">
+                <input id="taskInput" type="text" placeholder="Add a task…" maxlength="120" />
+                <button type="submit" class="btn btn-small">Add</button>
+              </form>
+              <ul id="taskList" class="task-list"></ul>
+            </div>
+
+            <div class="panel ambient-panel">
+              <h2>Ambient sound <span class="tag">generated live</span></h2>
+              <div class="ambient-master">
+                <button id="ambientToggle" class="btn btn-small">▶ Play</button>
+                <input id="ambientVolume" type="range" min="0" max="100" value="50" />
+              </div>
+              <div class="ambient-mix" id="ambientMix">
+                <label><span>White</span><input type="range" data-noise="white" min="0" max="100" value="0" /></label>
+                <label><span>Pink</span><input type="range" data-noise="pink" min="0" max="100" value="0" /></label>
+                <label><span>Brown</span><input type="range" data-noise="brown" min="0" max="100" value="60" /></label>
+                <label><span>Rain</span><input type="range" data-noise="rain" min="0" max="100" value="40" /></label>
+              </div>
+              <label class="check-row">
+                <input type="checkbox" id="keepDuringBreaks" checked />
+                Keep playing during breaks
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ DASHBOARD VIEW ============ -->
+      <section class="view" id="view-dashboard">
+        <h1>Your deep work</h1>
+        <div class="stat-cards">
+          <div class="stat-card"><div class="stat-value" id="statToday">0m</div><div class="stat-label">Focus today</div></div>
+          <div class="stat-card"><div class="stat-value" id="statWeek">0m</div><div class="stat-label">This week</div></div>
+          <div class="stat-card"><div class="stat-value" id="statStreak">0</div><div class="stat-label">Day streak</div></div>
+          <div class="stat-card"><div class="stat-value" id="statSessions">0</div><div class="stat-label">Total sessions</div></div>
+        </div>
+        <div class="panel">
+          <h2>Last 30 days</h2>
+          <div class="chart" id="chart"></div>
+        </div>
+        <div class="panel">
+          <h2>Session log</h2>
+          <ul class="session-log" id="sessionLog"></ul>
+        </div>
+      </section>
+
+      <!-- ============ SETTINGS VIEW ============ -->
+      <section class="view" id="view-settings">
+        <h1>Settings</h1>
+        <div class="panel settings-panel">
+          <h2>Timer</h2>
+          <div class="setting-row"><label for="setFocus">Focus length (minutes)</label>
+            <input id="setFocus" type="number" min="1" max="180" value="25" /></div>
+          <div class="setting-row"><label for="setShort">Short break (minutes)</label>
+            <input id="setShort" type="number" min="1" max="60" value="5" /></div>
+          <div class="setting-row"><label for="setLong">Long break (minutes)</label>
+            <input id="setLong" type="number" min="1" max="120" value="15" /></div>
+          <div class="setting-row"><label for="setEvery">Long break after every N sessions</label>
+            <input id="setEvery" type="number" min="1" max="12" value="4" /></div>
+          <div class="setting-row"><label for="setAuto">Auto-start next phase</label>
+            <input id="setAuto" type="checkbox" checked /></div>
+        </div>
+        <div class="panel settings-panel">
+          <h2>Sound</h2>
+          <div class="setting-row"><label for="setChime">Chime volume</label>
+            <input id="setChime" type="range" min="0" max="100" value="50" /></div>
+          <div class="setting-row"><label>Preview</label>
+            <button id="chimeTest" class="btn btn-small">Play chime</button></div>
+        </div>
+        <p class="settings-note">Everything is stored locally on this machine. No accounts, no cloud, no telemetry.</p>
+      </section>
+    </main>
+  </div>
+
+  <script src="../noise.js"></script>
+  <script src="audio.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
