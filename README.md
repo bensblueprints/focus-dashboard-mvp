@@ -12,7 +12,7 @@ Deepdesk is a local-first deep-work dashboard for Windows (and anywhere Electron
 
 Don't want to touch a terminal? Grab the packaged Windows installer:
 
-**→ [Get Deepdesk on Whop](https://whop.com/onetime-suite)** — one-time payment, lifetime updates.
+**→ [Get Deepdesk on Whop](https://whop.com/benjisaiempire/deepdesk)** — one-time payment, lifetime updates.
 
 The source here is MIT and always will be. The paid version is the convenience: a signed installer, auto-shortcuts, zero setup.
 
