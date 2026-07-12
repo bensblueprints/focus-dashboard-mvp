@@ -1,6 +1,7 @@
 'use strict';
 
-const { app, BrowserWindow, ipcMain, Notification, screen } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, Notification, screen } = require('electron');
+const fs = require('fs');
 const path = require('path');
 const { FocusTimer, PHASES } = require('./timer');
 const { Store } = require('./store');
@@ -16,6 +17,42 @@ let lastTick = 0;
 
 const MINI_COLLAPSED = { width: 232, height: 74 };
 const MINI_EXPANDED = { width: 232, height: 128 };
+
+const MUSIC_EXTS = ['mp3', 'wav', 'm4a', 'ogg', 'flac'];
+
+/** Bundled Lofi Focus Pack: assets/lofi in the repo, extraResources when packaged. */
+function lofiPackDir() {
+  return app.isPackaged
+    ? path.join(process.resourcesPath, 'assets', 'lofi')
+    : path.join(__dirname, '..', 'assets', 'lofi');
+}
+
+function getLofiPack() {
+  try {
+    const dir = lofiPackDir();
+    const tracks = fs.readdirSync(dir)
+      .filter((f) => f.toLowerCase().endsWith('.mp3'))
+      .sort()
+      .map((f) => ({
+        path: path.join(dir, f),
+        name: f.replace(/\.[^.]+$/, ''),
+      }));
+    return { installed: tracks.length > 0, tracks };
+  } catch {
+    return { installed: false, tracks: [] };
+  }
+}
+
+function isMusicFile(p) {
+  return typeof p === 'string' && MUSIC_EXTS.includes(path.extname(p).slice(1).toLowerCase());
+}
+
+function toTrackItems(paths) {
+  return (Array.isArray(paths) ? paths : [])
+    .filter(isMusicFile)
+    .filter((p) => { try { return fs.statSync(p).isFile(); } catch { return false; } })
+    .map((p) => ({ path: p, name: path.basename(p, path.extname(p)) }));
+}
 
 function settingsToTimerConfig(s) {
   return {
@@ -188,6 +225,23 @@ function registerIpc() {
   });
   ipcMain.handle('store:getSessions', () => store.getSessions());
   ipcMain.handle('store:getStats', () => store.getStats());
+
+  // Music
+  ipcMain.handle('music:get', () => store.getMusic());
+  ipcMain.handle('music:setPrefs', (_e, partial) => store.setMusicPrefs(partial || {}));
+  ipcMain.handle('music:import', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWin, {
+      title: 'Add music',
+      properties: ['openFile', 'multiSelections'],
+      filters: [{ name: 'Audio', extensions: MUSIC_EXTS }],
+    });
+    if (canceled || !filePaths.length) return store.getMusic();
+    return store.addMusicTracks(toTrackItems(filePaths));
+  });
+  ipcMain.handle('music:addPaths', (_e, paths) => store.addMusicTracks(toTrackItems(paths)));
+  ipcMain.handle('music:remove', (_e, id) => store.removeMusicTrack(id));
+  ipcMain.handle('music:move', (_e, { fromIndex, toIndex } = {}) => store.moveMusicTrack(fromIndex, toIndex));
+  ipcMain.handle('music:getLofiPack', () => getLofiPack());
 
   // Mini window
   ipcMain.on('mini:setExpanded', (_e, expanded) => {

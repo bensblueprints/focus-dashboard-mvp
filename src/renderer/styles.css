@@ -168,6 +168,43 @@ input[type="range"] { accent-color: var(--accent); height: 4px; }
 .check-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer; }
 .check-row input { accent-color: var(--accent); }
 
+/* ---------- Music ---------- */
+.music-panel.dropping { border-color: var(--accent); background: rgba(108, 140, 255, 0.06); }
+.music-now { margin-bottom: 12px; min-height: 34px; }
+.music-track-name {
+  font-size: 13px; font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.music-track-time { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.music-controls { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+.music-controls input[type="range"] { flex: 1; min-width: 60px; }
+.btn-icon { padding: 7px 10px; }
+.btn-icon.on { border-color: var(--accent); color: var(--accent); background: rgba(108, 140, 255, 0.1); }
+.music-list { list-style: none; display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; margin-bottom: 12px; }
+.music-item {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: 10px; padding: 8px 12px; font-size: 13px;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.music-item:hover { border-color: var(--accent); }
+.music-item.playing { border-color: var(--accent); background: rgba(108, 140, 255, 0.08); }
+.music-item.disabled { opacity: 0.55; cursor: default; }
+.music-item.disabled:hover { border-color: var(--border); }
+.music-item-icon { flex-shrink: 0; }
+.music-item-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.music-item-meta { font-size: 11px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.music-item-btn {
+  background: none; border: none; color: var(--muted);
+  cursor: pointer; font-size: 12px; padding: 0 2px; font-family: inherit;
+}
+.music-item-btn:hover:not(:disabled) { color: var(--text); }
+.music-item-btn:disabled { opacity: 0.3; cursor: default; }
+.music-item-del:hover:not(:disabled) { color: var(--danger); }
+.music-empty { color: var(--muted); font-size: 13px; padding: 4px 2px; }
+.music-actions { display: flex; align-items: center; gap: 10px; }
+.music-hint { font-size: 11px; color: var(--muted); }
+
 /* ---------- Dashboard ---------- */
 .stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
 .stat-card {

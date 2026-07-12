@@ -24,6 +24,7 @@ The source here is MIT and always will be. The paid version is the convenience: 
 - **Always-on-top mini timer** — frameless, draggable floating widget with a live progress ring. Hover to expand pause / skip / open controls.
 - **Transitions you can feel** — OS notification plus a gentle two-note chime synthesized live with WebAudio (no audio files shipped).
 - **Ambient sound engine** — white, pink, and brown noise plus procedural rain, all generated mathematically in real time. Per-source mix sliders, master volume, and a "keep playing during breaks" toggle.
+- **Music player + Lofi Focus Pack** — a built-in pack of 60 one-minute lofi tracks (generated locally with MusicGen, bundled with the app) plus your own music: import mp3/wav/m4a/ogg/flac via file picker or drag-and-drop, reorder the playlist, shuffle and loop, and mix it with the ambient engine at an independent volume.
 - **Daily dashboard** — focus minutes today and this week, day streak, a 30-day history chart, and a full session log with intents.
 - **Local-first** — settings, tasks, and history persist as plain JSON under your OS user-data folder. Yours to back up, grep, or delete.
 

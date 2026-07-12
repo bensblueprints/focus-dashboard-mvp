@@ -26,6 +26,15 @@
       "package.json",
       "LICENSE"
     ],
+    "extraResources": [
+      {
+        "from": "assets/lofi",
+        "to": "assets/lofi",
+        "filter": [
+          "*.mp3"
+        ]
+      }
+    ],
     "win": {
       "target": [
         "nsis"
@@ -36,7 +45,8 @@
       "oneClick": true,
       "perMachine": false,
       "deleteAppDataOnUninstall": false,
-      "shortcutName": "Deepdesk"
+      "shortcutName": "Deepdesk",
+      "menuCategory": "OneTimeSuite"
     }
   }
 }

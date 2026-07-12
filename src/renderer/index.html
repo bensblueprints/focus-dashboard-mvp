@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' file:;" />
   <title>Deepdesk</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -76,6 +76,33 @@
                 Keep playing during breaks
               </label>
             </div>
+
+            <div class="panel music-panel" id="musicPanel">
+              <h2>Music <span class="tag">mixes with ambient</span></h2>
+              <div class="music-now">
+                <div class="music-track-name" id="musicTrackName">Nothing playing</div>
+                <div class="music-track-time" id="musicTrackTime"></div>
+              </div>
+              <div class="music-controls">
+                <button id="musicPrev" class="btn btn-small btn-icon" title="Previous">⏮</button>
+                <button id="musicPlay" class="btn btn-small btn-icon" title="Play / pause">▶</button>
+                <button id="musicNext" class="btn btn-small btn-icon" title="Next">⏭</button>
+                <button id="musicShuffle" class="btn btn-small btn-icon" title="Shuffle">🔀</button>
+                <button id="musicLoop" class="btn btn-small btn-icon" title="Loop playlist">🔁</button>
+                <input id="musicVolume" type="range" min="0" max="100" value="50" title="Music volume" />
+              </div>
+              <ul class="music-list" id="musicList">
+                <li class="music-item music-lofi" id="lofiPackRow">
+                  <span class="music-item-icon">🎧</span>
+                  <span class="music-item-title">Lofi Focus Pack</span>
+                  <span class="music-item-meta" id="lofiPackMeta">…</span>
+                </li>
+              </ul>
+              <div class="music-actions">
+                <button id="musicImport" class="btn btn-small">+ Import music</button>
+                <span class="music-hint">or drop audio files here</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -130,5 +157,6 @@
   <script src="../noise.js"></script>
   <script src="audio.js"></script>
   <script src="app.js"></script>
+  <script src="music.js"></script>
 </body>
 </html>

@@ -25,6 +25,12 @@ const DEFAULTS = Object.freeze({
   },
   tasks: [], // { id, title, pomodoros, done, createdAt }
   sessions: [], // { ts, intent, minutes, taskId, natural }
+  music: {
+    tracks: [], // { id, path, name, addedAt }
+    volume: 0.5,
+    shuffle: false,
+    loopPlaylist: true,
+  },
 });
 
 function dayKey(ts) {
@@ -73,6 +79,11 @@ class Store {
         },
         tasks: Array.isArray(parsed.tasks) ? parsed.tasks : [],
         sessions: Array.isArray(parsed.sessions) ? parsed.sessions : [],
+        music: {
+          ...DEFAULTS.music,
+          ...(parsed.music || {}),
+          tracks: Array.isArray((parsed.music || {}).tracks) ? parsed.music.tracks : [],
+        },
       };
     } catch {
       return JSON.parse(JSON.stringify(DEFAULTS));
@@ -120,6 +131,55 @@ class Store {
       this.save();
     }
     return t || null;
+  }
+
+  // ---- music playlist ----
+  getMusic() { return this.data.music; }
+
+  /** Player prefs only (volume / shuffle / loopPlaylist) — tracks have their own methods. */
+  setMusicPrefs(partial) {
+    const { tracks, ...prefs } = partial || {};
+    this.data.music = { ...this.data.music, ...prefs, tracks: this.data.music.tracks };
+    this.save();
+    return this.data.music;
+  }
+
+  /** Append tracks (array of { path, name }), de-duped by path. */
+  addMusicTracks(items) {
+    const existing = new Set(this.data.music.tracks.map((t) => t.path));
+    let nextId = this.data.music.tracks.reduce((m, t) => Math.max(m, t.id), 0);
+    for (const item of Array.isArray(items) ? items : []) {
+      if (!item || typeof item.path !== 'string' || !item.path || existing.has(item.path)) continue;
+      existing.add(item.path);
+      nextId += 1;
+      this.data.music.tracks.push({
+        id: nextId,
+        path: item.path,
+        name: item.name || item.path.split(/[\\/]/).pop().replace(/\.[^.]+$/, ''),
+        addedAt: Date.now(),
+      });
+    }
+    this.save();
+    return this.data.music;
+  }
+
+  removeMusicTrack(id) {
+    this.data.music.tracks = this.data.music.tracks.filter((t) => t.id !== id);
+    this.save();
+    return this.data.music;
+  }
+
+  /** Reorder: move the track at fromIndex to toIndex (both clamped). */
+  moveMusicTrack(fromIndex, toIndex) {
+    const tracks = this.data.music.tracks;
+    const from = Math.min(tracks.length - 1, Math.max(0, fromIndex | 0));
+    const to = Math.min(tracks.length - 1, Math.max(0, toIndex | 0));
+    if (tracks.length && from !== to) {
+      const [moved] = tracks.splice(from, 1);
+      tracks.splice(to, 0, moved);
+      this.save();
+    }
+    return this.data.music;
   }
 
   // ---- sessions ----

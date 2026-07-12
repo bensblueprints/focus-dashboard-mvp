@@ -186,4 +186,68 @@ console.log('\n== 7. Store: session log + settings persistence round-trip ==');
   }
 }
 
+console.log('\n== 8. Store: music playlist add/remove/reorder/persist ==');
+{
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'deepdesk-test-'));
+  try {
+    const s1 = new Store(dir);
+    const m0 = s1.getMusic();
+    eq(m0.tracks.length, 0, 'music starts with an empty playlist');
+    eq(m0.loopPlaylist, true, 'loopPlaylist defaults on');
+
+    // add (with dedupe by path + name derived from filename)
+    s1.addMusicTracks([
+      { path: 'C:\\music\\alpha.mp3' },
+      { path: 'C:\\music\\beta.flac', name: 'Beta (custom)' },
+      { path: 'C:\\music\\gamma.ogg' },
+      { path: 'C:\\music\\alpha.mp3' }, // duplicate
+      { path: '' }, // invalid
+    ]);
+    let m = s1.getMusic();
+    eq(m.tracks.length, 3, 'add: 3 unique tracks (duplicate + invalid rejected)');
+    eq(m.tracks[0].name, 'alpha', 'add: name derived from filename without extension');
+    eq(m.tracks[1].name, 'Beta (custom)', 'add: explicit name wins');
+    ok(m.tracks.every((t, i, a) => a.findIndex((x) => x.id === t.id) === i), 'add: track ids are unique');
+
+    // reorder
+    s1.moveMusicTrack(2, 0);
+    eq(s1.getMusic().tracks.map((t) => t.name).join(','), 'gamma,alpha,Beta (custom)', 'move: track moved to front');
+    s1.moveMusicTrack(0, 99); // clamped to last
+    eq(s1.getMusic().tracks.map((t) => t.name).join(','), 'alpha,Beta (custom),gamma', 'move: out-of-range target clamps to end');
+
+    // remove
+    const betaId = s1.getMusic().tracks[1].id;
+    s1.removeMusicTrack(betaId);
+    eq(s1.getMusic().tracks.length, 2, 'remove: track deleted by id');
+    s1.removeMusicTrack(9999);
+    eq(s1.getMusic().tracks.length, 2, 'remove: unknown id is a no-op');
+
+    // prefs (must not clobber tracks)
+    s1.setMusicPrefs({ volume: 0.8, shuffle: true, tracks: 'bogus' });
+    eq(s1.getMusic().volume, 0.8, 'prefs: volume updated');
+    eq(s1.getMusic().shuffle, true, 'prefs: shuffle updated');
+    eq(s1.getMusic().tracks.length, 2, 'prefs: cannot overwrite tracks');
+
+    // persistence round-trip through disk
+    const s2 = new Store(dir);
+    const m2 = s2.getMusic();
+    eq(m2.tracks.length, 2, 'persist: playlist survives the round-trip');
+    eq(m2.tracks.map((t) => t.name).join(','), 'alpha,gamma', 'persist: order survives');
+    eq(m2.volume, 0.8, 'persist: player prefs survive');
+    eq(m2.loopPlaylist, true, 'persist: untouched prefs keep defaults');
+
+    // adding after reload continues ids without collisions
+    s2.addMusicTracks([{ path: 'C:\\music\\delta.wav' }]);
+    const ids = s2.getMusic().tracks.map((t) => t.id);
+    ok(new Set(ids).size === ids.length, 'persist: new ids after reload stay unique');
+
+    // corrupt file -> safe music defaults
+    fs.writeFileSync(path.join(dir, 'deepdesk-data.json'), '{not json', 'utf8');
+    const s3 = new Store(dir);
+    eq(s3.getMusic().tracks.length, 0, 'corrupt data file falls back to empty playlist');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
 console.log(`\nAll smoke tests passed — ${assertions} assertions.`);
