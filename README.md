@@ -72,3 +72,7 @@ npm run dist  # builds the Windows NSIS installer (electron-builder)
 ## License
 
 [MIT](LICENSE) © 2026 Ben (bensblueprints)
+
+## macOS build
+
+See [MAC-BUILD.md](MAC-BUILD.md). Quickest path: GitHub **Actions** tab -> run the **Mac Build** (`mac-build.yml`) workflow to get a downloadable `.dmg` (unsigned - right-click -> Open on first launch).
